@@ -79,7 +79,6 @@ helium.add_element('He', 2.4044e-4)
 #Material mixtures
 
 inner_fuel_material= openmc.Material.mix_materials([u235, u238, pu238, pu239, pu240, pu241, pu242, am241, o16],[0.0019, 0.7509, 0.0046, 0.0612, 0.0383, 0.0106, 0.0134, 0.001, 0.1181],'wo')
-#outer_fuel_material= openmc.Material.mix_materials([u235, u238, pu238, pu239, pu240, pu241, pu242, am241, o16],[0.0018, 0.73, 0.0053, 0.0711, 0.0445, 0.0124, 0.0156, 0.0017, 0.1176],'wo')
 cladding_material = openmc.Material.mix_materials([cu63,Al2O3], [0.997,0.003], 'wo')
 
 materials=openmc.Materials([inner_fuel_material,sodium,helium,cladding_material])
