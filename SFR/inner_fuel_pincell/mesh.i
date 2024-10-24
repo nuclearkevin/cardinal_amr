@@ -13,10 +13,10 @@ t_clad       = 0.05
 #----------------------------------------------------------------------------------------
 # Meshing parameters
 #----------------------------------------------------------------------------------------
-NUM_SECTORS              = 12
-FUEL_RADIAL_DIVISIONS    = 10
-BACKGROUND_DIVISIONS     = 4
-AXIAL_DIVISIONS          = 15
+NUM_SECTORS              = 2
+FUEL_RADIAL_DIVISIONS    = 5
+BACKGROUND_DIVISIONS     = 3
+AXIAL_DIVISIONS          = 6
 #----------------------------------------------------------------------------------------
 
 [Mesh]

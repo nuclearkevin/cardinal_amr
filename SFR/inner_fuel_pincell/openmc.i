@@ -45,8 +45,8 @@
 [Problem]
   type = OpenMCCellAverageProblem
   particles = 20000
-  inactive_batches = 500
-  batches = 10000
+  inactive_batches = 50
+  batches = 150
 
   verbose = true
   power = ${fparse 3000e6 / 273 / (17 * 17)}
