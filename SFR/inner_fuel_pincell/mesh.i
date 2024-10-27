@@ -61,9 +61,5 @@ AXIAL_DIVISIONS          = 6
     transform = TRANSLATE
     vector_value = '0.0 0.0 ${fparse height / 2.0}'
   []
-  [Delete_Gap]
-    type = BlockDeletionGenerator
-    input = Down
-    block = '2'
-  []
+
 []
