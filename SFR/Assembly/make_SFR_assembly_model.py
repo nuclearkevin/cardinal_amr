@@ -2,12 +2,14 @@ import openmc
 import numpy as np
 from argparse import ArgumentParser
 import openmc.material 
+import warnings
+warnings.filterwarnings('ignore')
 
 
 # Create the argument parser
 ap = ArgumentParser(description="SFR Pincell Model Generator")
 ap.add_argument('-n', dest='n_axial', type=int, default=100, help='Number of cells in the Z direction')
-ap.add_argument('-e', '--shanon_entropy', action='store_true', help='Add Shannon entropy mesh')
+ap.add_argument('-e', '--shannon_entropy', action='store_true', help='Add Shannon entropy mesh')
 ap.add_argument('--height', dest='height_of_the_core', type=float, default=30.0, help='Height of the reactor core')
 
 # Parse the arguments
@@ -17,6 +19,7 @@ arguments=ap.parse_args()
 
 N=arguments.n_axial
 height=arguments.height_of_the_core
+shannon_entropy=arguments.shannon_entropy
 
 
 ###################################################################
@@ -162,7 +165,7 @@ inseven = [inner_u]*12
 ineight = [inner_u]*6
 innine = [inner_u]*1
 in_lat.universes = [inone,intwo,inthree,infour,infive,insix,inseven,ineight,innine]
-
+print (in_lat)
 # Create the prism that will contain the lattice
 outer_in_surface = openmc.model.hexagonal_prism(edge_length=12.1705, orientation='x')
 
@@ -174,7 +177,7 @@ out_in_assembly  = openmc.Cell(cell_id=8, fill=sodium, region=~outer_in_surface 
 
 # Create a universe that contains both 
 main_in_u = openmc.Universe(universe_id=4, cells=[main_in_assembly, out_in_assembly])
-print (main_in_u)
+
 # Create a geometry and export to XML
 geometry = openmc.Geometry(main_in_u)
 geometry.export_to_xml()
@@ -189,12 +192,6 @@ settings.batches=1000
 settings.inactive=400
 settings.particles=10000
 
-
-# Create an initial uniform spatial source distribution over fissionable zones
-lower_left = (-3.0 * pitch / 2.0, -3.0 * pitch / 2.0, 0.0)
-upper_right = (3.0 * pitch / 2.0, 3.0 * pitch / 2.0, height)
-uniform_dist = openmc.stats.Box(lower_left, upper_right)
-settings.source = openmc.IndependentSource(space=uniform_dist)
 
 if (shannon_entropy):
   entropy_mesh = openmc.RegularMesh()
