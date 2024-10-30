@@ -144,11 +144,11 @@ for i in range (N):
     
 inner_u = openmc.Universe(cells=(all_inner_cells))
 
-sodium_mod_cell = openmc.Cell(cell_id=6, fill=sodium)
-sodium_mod_u = openmc.Universe(universe_id=3, cells=(sodium_mod_cell,))
+sodium_mod_cell = openmc.Cell( fill=sodium)
+sodium_mod_u = openmc.Universe( cells=(sodium_mod_cell,))
 
 # Define a lattice for inner assemblies
-in_lat = openmc.HexLattice(lattice_id=1, name='inner assembly')
+in_lat = openmc.HexLattice( name='inner assembly')
 in_lat.center = (0., 0.)
 in_lat.pitch = (21.08/17,)
 in_lat.orientation = 'x'
@@ -165,18 +165,17 @@ inseven = [inner_u]*12
 ineight = [inner_u]*6
 innine = [inner_u]*1
 in_lat.universes = [inone,intwo,inthree,infour,infive,insix,inseven,ineight,innine]
-print (in_lat)
 # Create the prism that will contain the lattice
 outer_in_surface = openmc.model.hexagonal_prism(edge_length=12.1705, orientation='x')
 
 # Fill a cell with the lattice. This cell is filled with the lattice and contained within the prism.
-main_in_assembly = openmc.Cell(cell_id=7, fill=in_lat, region=outer_in_surface & -top & +bottom)
+main_in_assembly = openmc.Cell( fill=in_lat, region=outer_in_surface & -top & +bottom)
 
 # Fill a cell with a material that will surround the lattice
-out_in_assembly  = openmc.Cell(cell_id=8, fill=sodium, region=~outer_in_surface & -top & +bottom)
+out_in_assembly  = openmc.Cell( fill=sodium, region=~outer_in_surface & -top & +bottom)
 
 # Create a universe that contains both 
-main_in_u = openmc.Universe(universe_id=4, cells=[main_in_assembly, out_in_assembly])
+main_in_u = openmc.Universe( cells=[main_in_assembly, out_in_assembly])
 
 # Create a geometry and export to XML
 geometry = openmc.Geometry(main_in_u)
@@ -188,9 +187,9 @@ geometry.export_to_xml()
 
 # settings 
 settings=openmc.Settings()
-settings.batches=1000
-settings.inactive=400
-settings.particles=10000
+settings.batches=200
+settings.inactive=40
+settings.particles=20000
 
 
 if (shannon_entropy):
@@ -204,6 +203,7 @@ settings.temperature = {'default': 280.0 + 273.15,
                         'method': 'interpolation',
                         'range': (294.0, 3000.0),
                         'tolerance': 1000.0}
-
-settings.export_to_xml()
+                        
+settings.export_to_xml()                      
+                        
 
