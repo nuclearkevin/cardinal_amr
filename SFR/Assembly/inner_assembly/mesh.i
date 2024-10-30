@@ -2,7 +2,7 @@
 # Assembly geometrical information
 #----------------------------------------------------------------------------------------
 pitch        = 1.25984
-height       = 30.0
+height       = 300.0
 r_fuel       = 0.4715
 t_gap        = 0.0150
 r_clad_inner = 0.4865
