@@ -151,7 +151,7 @@ sodium_mod_u = openmc.Universe( cells=(sodium_mod_cell,))
 in_lat = openmc.HexLattice( name='inner assembly')
 in_lat.center = (0., 0.)
 in_lat.pitch = (21.08/17,)
-in_lat.orientation = 'x'
+in_lat.orientation = 'y'
 in_lat.outer = sodium_mod_u
 
 # Create rings of fuel universes that will fill the lattice
@@ -166,7 +166,7 @@ ineight = [inner_u]*6
 innine = [inner_u]*1
 in_lat.universes = [inone,intwo,inthree,infour,infive,insix,inseven,ineight,innine]
 # Create the prism that will contain the lattice
-outer_in_surface = openmc.model.hexagonal_prism(edge_length=12.1705, orientation='x')
+outer_in_surface = openmc.model.hexagonal_prism(edge_length=12.1705, orientation='y')
 
 # Fill a cell with the lattice. This cell is filled with the lattice and contained within the prism.
 main_in_assembly = openmc.Cell( fill=in_lat, region=outer_in_surface & -top & +bottom)
