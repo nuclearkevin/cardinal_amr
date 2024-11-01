@@ -1,6 +1,12 @@
 import openmc
 import numpy as np
 import openmc.universe
+from argparse import ArgumentParser
+
+ap = ArgumentParser()
+ap.add_argument('-n', dest='n_axial', type=int, default=1,
+                help='Number of axial core divisions')
+args = ap.parse_args()
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # This is a modified version of the C5G7 reactor physics benchmark problem extension case as described in:                 #
@@ -42,7 +48,7 @@ core_height = 192.78
 reflector_t = 21.42
 
 # Some discretization parameters.
-core_axial_slices = 1
+core_axial_slices = args.n_axial
 #--------------------------------------------------------------------------------------------------------------------------#
 
 #--------------------------------------------------------------------------------------------------------------------------#
