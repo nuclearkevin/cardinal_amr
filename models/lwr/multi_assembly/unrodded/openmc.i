@@ -21,7 +21,8 @@
   [Tallies]
     [heat_source]
       type = MeshTally
-      score = 'kappa_fission flux'
+      score = 'kappa_fission flux fission'
+      name = 'heat_source flux fission'
       output = 'unrelaxed_tally_std_dev unrelaxed_tally_rel_error'
     []
   []
