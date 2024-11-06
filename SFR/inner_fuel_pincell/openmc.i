@@ -30,12 +30,9 @@
     []
     [error_combo]
       type = BooleanComboMarker
-      # Only refine iff the relative error is sufficiently low AND there is a large enough
-      # jump discontinuity in the solution.
+      
       refine_markers = 'rel_error error_frac'
-      # Coarsen based exclusively on relative error. Jump discontinuities in the solution
-      # from large relative errors causes the 'error_frac' marker to erroneously mark elements
-      # for refinement.
+      
       coarsen_markers = 'rel_error'
       boolean_operator = and
     []
