@@ -2,7 +2,7 @@
 # Assembly geometrical information
 #----------------------------------------------------------------------------------------
 pitch        = 1.25984
-height       = 30.0
+height       = 192.78
 r_fuel       = 0.39218
 t_gap        = 0.00787
 r_clad_inner = 0.40005
@@ -12,10 +12,10 @@ t_clad       = 0.05715
 #----------------------------------------------------------------------------------------
 # Meshing parameters
 #----------------------------------------------------------------------------------------
-NUM_SECTORS              = 6
-FUEL_RADIAL_DIVISIONS    = 4
-BACKGROUND_DIVISIONS     = 2
-AXIAL_DIVISIONS          = 10
+NUM_SECTORS              = 2
+FUEL_RADIAL_DIVISIONS    = 2
+BACKGROUND_DIVISIONS     = 1
+AXIAL_DIVISIONS          = 5
 #----------------------------------------------------------------------------------------
 
 [Mesh]

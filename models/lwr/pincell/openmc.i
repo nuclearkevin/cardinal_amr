@@ -13,8 +13,9 @@
 
   verbose = true
   power = ${fparse 3000e6 / 273 / (17 * 17)}
-  cell_level = 1
   normalize_by_global_tally = false
+  source_rate_normalization = 'kappa_fission'
+  assume_separate_tallies = true
 
   [Tallies]
     [heat_source]

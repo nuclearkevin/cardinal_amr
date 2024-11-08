@@ -6,3 +6,7 @@
 *.out
 *.e
 *.xml
+*.csv
+
+# OpenMC plotter files
+*.pkl
