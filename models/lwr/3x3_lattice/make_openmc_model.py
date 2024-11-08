@@ -40,6 +40,9 @@ t_f_c_gap = 0.0085
 ## The thickness of the Zr fuel pin cladding.
 t_zr_clad = 0.057
 
+## The thickness of the axial reflector above the lattice.
+reflector_t = 21.42
+
 ###############################################################################
 # Create materials for the problem
 
@@ -91,7 +94,6 @@ for i in range(N + 1):
 
 # set the boundary condition on the topmost and bottommost planes to vacuum
 plane_surfaces[0].boundary_type = 'reflective'
-plane_surfaces[-1].boundary_type = 'vacuum'
 
 fuel_cells = []
 clad_cells = []
@@ -125,8 +127,12 @@ assembly.universes = assembly_cells
 assembly_region = openmc.model.RectangularPrism(width = 3.0 * pitch, height = 3.0 * pitch, origin = (0.0, 0.0), boundary_type = 'reflective')
 full_assembly_cell = openmc.Cell(name='Assembly Cell', fill = assembly, region=-assembly_region & -plane_surfaces[-1] & +plane_surfaces[0])
 
+# Add the top axial water reflector.
+refl_top = openmc.ZPlane(z0 = height + reflector_t, boundary_type = 'vacuum')
+refl_cell = openmc.Cell(name='Axial Reflector Cell', fill = h2o, region=-assembly_region & -refl_top & +plane_surfaces[-1])
+
 # Create a geometry and export to XML
-geometry = openmc.Geometry([full_assembly_cell])
+geometry = openmc.Geometry([full_assembly_cell, refl_cell])
 geometry.export_to_xml()
 
 ###############################################################################
