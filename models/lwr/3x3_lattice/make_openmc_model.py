@@ -28,48 +28,59 @@ ap.add_argument('-s', '--entropy', action='store_true',
 args = ap.parse_args()
 
 N = args.n_axial # Number of axial cells to build in the solid to receive feedback
-height = 30.0   # Total height of pincell
+height = 192.78  # Total height of pincell
+
+# Some geometric properties that can be modified to change the model.
+## The radius of a fuel pin (same for all pin types).
+r_fuel = 0.4095
+
+## The thickness of the fuel-clad gap.
+t_f_c_gap = 0.0085
+
+## The thickness of the Zr fuel pin cladding.
+t_zr_clad = 0.057
 
 ###############################################################################
 # Create materials for the problem
 
-uo2 = openmc.Material(name='UO2 fuel at 2.4% wt enrichment')
-uo2.set_density('g/cm3', 10.29769)
-uo2.add_element('U', 1., enrichment=2.4)
-uo2.add_element('O', 2.)
+## UO2 for the fuel.
+uo2_comp = 1.0e24 * np.array([8.65e-4, 2.225e-2, 4.622e-2])
+uo2_frac = uo2_comp / np.sum(uo2_comp)
+uo2 = openmc.Material(name = 'UO2 Fuel', temperature = 293.15)
+uo2.add_nuclide('U235', uo2_frac[0], percent_type = 'ao')
+uo2.add_nuclide('U238', uo2_frac[1], percent_type = 'ao')
+uo2.add_element('O', uo2_frac[2], percent_type = 'ao')
+uo2.set_density('atom/cm3', np.sum(uo2_comp))
 
-helium = openmc.Material(name='Helium for gap')
-helium.set_density('g/cm3', 0.001598)
-helium.add_element('He', 2.4044e-4)
+## Pure Zirconium for the cladding.
+zr = openmc.Material(name = 'Zr Cladding', temperature = 293.15)
+zr.add_element('Zr', 1.0, percent_type = 'ao')
+zr.set_density('atom/cm3', 1.0e24 * 4.30e-2)
 
-zircaloy = openmc.Material(name='Zircaloy 4')
-zircaloy.set_density('g/cm3', 6.55)
-zircaloy.add_element('Sn', 0.014  , 'wo')
-zircaloy.add_element('Fe', 0.00165, 'wo')
-zircaloy.add_element('Cr', 0.001  , 'wo')
-zircaloy.add_element('Zr', 0.98335, 'wo')
-
-borated_water = openmc.Material(name='Borated water')
-borated_water.set_density('g/cm3', 0.740582)
-borated_water.add_element('B', 4.0e-5)
-borated_water.add_element('H', 5.0e-2)
-borated_water.add_element('O', 2.4e-2)
-borated_water.add_s_alpha_beta('c_H_in_H2O')
+## Borated water.
+h2o_comp = 1.0e24 * np.array([3.35e-2, 2.78e-5])
+h2o_frac = h2o_comp / np.sum(h2o_comp)
+h2o = openmc.Material(name = 'H2O Moderator', temperature = 293.15)
+h2o.add_element('H', 2.0 * h2o_frac[0], percent_type = 'ao')
+h2o.add_element('O', h2o_frac[0], percent_type = 'ao')
+h2o.add_element('B', h2o_frac[1], percent_type = 'ao')
+h2o.set_density('atom/cm3', np.sum(h2o_comp))
+h2o.add_s_alpha_beta('c_H_in_H2O')
 
 # Collect the materials together and export to XML
-materials = openmc.Materials([uo2, helium, zircaloy, borated_water])
+materials = openmc.Materials([uo2, zr, h2o])
 materials.export_to_xml()
 
 ###############################################################################
 # Define problem geometry
 
 # Create cylindrical surfaces
-fuel_or = openmc.ZCylinder(r=0.39218, name='Fuel OR')
-clad_ir = openmc.ZCylinder(r=0.40005, name='Clad IR')
-clad_or = openmc.ZCylinder(r=0.45720, name='Clad OR')
+fuel_or = openmc.ZCylinder(r = r_fuel, name = 'Fuel Outer Radius')
+clad_ir = openmc.ZCylinder(r = r_fuel + t_f_c_gap, name = 'Clad Inner Radius')
+clad_or = openmc.ZCylinder(r = r_fuel + t_f_c_gap + t_zr_clad, name = 'Clad Outer Radius')
 
 # Create a region represented as the inside of a rectangular prism
-pitch = 1.25984
+pitch = 1.26
 box = openmc.model.RectangularPrism(pitch, pitch)
 
 # Create cells, mapping materials to regions - split up the axial height
@@ -90,9 +101,9 @@ all_cells = []
 for i in range(N):
   layer = +plane_surfaces[i] & -plane_surfaces[i + 1]
   fuel_cells.append(openmc.Cell(fill=uo2, region=-fuel_or & layer, name='Fuel{:n}'.format(i)))
-  gap_cells.append(openmc.Cell(fill=helium, region=+fuel_or & -clad_ir & layer, name='Gap{:n}'.format(i)))
-  clad_cells.append(openmc.Cell(fill=zircaloy, region=+clad_ir & -clad_or & layer, name='Clad{:n}'.format(i)))
-  water_cells.append(openmc.Cell(fill=borated_water, region=+clad_or & layer & -box, name='Water{:n}'.format(i)))
+  gap_cells.append(openmc.Cell(fill=None, region=+fuel_or & -clad_ir & layer, name='Gap{:n}'.format(i)))
+  clad_cells.append(openmc.Cell(fill=zr, region=+clad_ir & -clad_or & layer, name='Clad{:n}'.format(i)))
+  water_cells.append(openmc.Cell(fill=h2o, region=+clad_or & layer & -box, name='Water{:n}'.format(i)))
   all_cells.append(fuel_cells[i])
   all_cells.append(gap_cells[i])
   all_cells.append(clad_cells[i])
