@@ -34,7 +34,7 @@
       refine_markers = 'rel_error error_frac'
       
       coarsen_markers = 'rel_error'
-      boolean_operator = and
+      boolean_operator = or
     []
   []
 []
