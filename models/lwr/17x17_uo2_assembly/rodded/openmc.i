@@ -28,6 +28,22 @@
   []
 []
 
+[Postprocessors]
+  [num_active]
+    type = NumElems
+    elem_filter = active
+  []
+  [num_total]
+    type = NumElems
+    elem_filter = total
+  []
+  [max_rel_err]
+    type = TallyRelativeError
+    value_type = max
+    tally_score = kappa_fission
+  []
+[]
+
 [Executioner]
   type = Steady
 []
