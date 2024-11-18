@@ -202,7 +202,7 @@ all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = h2o, region=-as
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([uo2, h2o, fiss, zr, al]))
+c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([uo2, h2o, fiss, zr, al, bc4]))
 
 ## The simulation settings.
 c5g7_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0, 0.0),
