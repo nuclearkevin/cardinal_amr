@@ -82,7 +82,7 @@ AXIAL_DIVISIONS          = 5
   []
   [UO2_Assembly]
     type = PatternedCartesianMeshGenerator
-    inputs = 'UO2_Pin Guide_Tube_Pin Fission_Chamber_Pin'
+    inputs = 'UO2_Pin Control_Rod_Pin Fission_Chamber_Pin'
     pattern = '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
                0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
                0 0 0 0 0 1 0 0 1 0 0 1 0 0 0 0 0;
