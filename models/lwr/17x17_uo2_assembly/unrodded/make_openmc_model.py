@@ -152,7 +152,7 @@ fission_chamber_cell.fill = fiss
 fis_u = openmc.Universe(cells=[fission_chamber_cell, tube_clad_cell_2, guide_tube_h2o_bb_cell_2])
 
 ## The assembly.
-assembly_bb = openmc.model.RectangularPrism(width = 17.0 * pitch, height = 17.0 * pitch, boundary_type = 'reflective')
+assembly_bb = openmc.model.RectangularPrism(origin = (0.0, 0.0), width = 16.9 * pitch, height = 16.9 * pitch, boundary_type = 'reflective')
 
 ### UO2 fueled assembly.
 uo2_assembly_cells = [

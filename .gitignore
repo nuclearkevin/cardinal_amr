@@ -10,3 +10,8 @@
 
 # OpenMC plotter files
 *.pkl
+
+# Post processing.
+*.png
+*.gif
+*.zip
