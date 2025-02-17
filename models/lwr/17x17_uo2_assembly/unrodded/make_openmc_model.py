@@ -53,7 +53,6 @@ core_axial_slices = args.n_axial
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Material definitions.
-
 ## Fuel region: UO2 at ~1% enriched.
 uo2_comp = 1.0e24 * np.array([8.65e-4, 2.225e-2, 4.622e-2])
 uo2_frac = uo2_comp / np.sum(uo2_comp)
@@ -161,7 +160,10 @@ wat_u = openmc.Universe(cells=[water_cell])
 assembly_bb = openmc.model.RectangularPrism(origin = (0.0, 0.0), width = 16.9 * pitch, height = 16.9 * pitch, boundary_type = 'reflective')
 
 ### UO2 fueled assembly.
-uo2_assembly_cells = [
+uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
+uo2_assembly.pitch = (pitch, pitch)
+uo2_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+uo2_assembly.universes = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 1
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 2
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 3
@@ -181,24 +183,18 @@ uo2_assembly_cells = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
 
-uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
-uo2_assembly.pitch = (pitch, pitch)
-uo2_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-uo2_assembly.universes = uo2_assembly_cells
-
-core_z_planes = []
-for z in np.linspace(0.0, core_height, core_axial_slices + 1):
-  core_z_planes.append(openmc.ZPlane(z0 = z))
+core_z_planes = [ openmc.ZPlane(z0=z) for z in np.linspace(0.0, core_height, core_axial_slices + 1) ]
 core_z_planes[0].boundary_type = 'reflective'
 
-uo2_assembly_cells = []
 all_cells = []
-for i in range(core_axial_slices):
-  uo2_assembly_cells.append(openmc.Cell(name = 'UO2 Assembly Cell ' + str(i), region = -assembly_bb & +core_z_planes[i] & -core_z_planes[i + 1], fill = uo2_assembly))
-  all_cells.append(uo2_assembly_cells[-1])
+for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
+  all_cells.append(openmc.Cell(name = f'UO2 Assembly Cell {layer_idx}', region = -assembly_bb & +planes[0] & -planes[1], fill = uo2_assembly))
 
 ### The upper reflector.
-ref_assembly_cells = [
+ref_assembly = openmc.RectLattice(name = 'Reflector Assembly')
+ref_assembly.pitch = (pitch, pitch)
+ref_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+ref_assembly.universes = [
   [wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u], # 1
   [wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u], # 2
   [wat_u, wat_u, wat_u, wat_u, wat_u, tub_u, wat_u, wat_u, tub_u, wat_u, wat_u, tub_u, wat_u, wat_u, wat_u, wat_u, wat_u], # 3
@@ -217,11 +213,6 @@ ref_assembly_cells = [
   [wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u], # 16
   [wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u, wat_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
-
-ref_assembly = openmc.RectLattice(name = 'Reflector Assembly')
-ref_assembly.pitch = (pitch, pitch)
-ref_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-ref_assembly.universes = ref_assembly_cells
 
 refl_top = openmc.ZPlane(z0 = core_height + reflector_t, boundary_type = 'vacuum')
 all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = ref_assembly, region=-assembly_bb & -refl_top & +core_z_planes[-1]))
