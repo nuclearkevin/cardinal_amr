@@ -163,26 +163,3 @@ settings.temperature = {'default': 280.0 + 273.15,
                         'tolerance': 1000.0}
 
 settings.export_to_xml()
-
-quit()
-
-# create some plots to look at the geometry for the sake of the tutorial
-plot1          = openmc.Plot()
-plot1.filename = 'plot1'
-plot1.width    = (pitch, pitch)
-plot1.basis    = 'xy'
-plot1.origin   = (0.0, 0.0, height/2.0)
-plot1.pixels   = (1000, 1000)
-plot1.color_by = 'cell'
-
-plot2          = openmc.Plot()
-plot2.filename = 'plot2'
-plot2.width    = (pitch, height)
-plot2.basis    = 'xz'
-plot2.origin   = (0.0, 0.0, height/2.0)
-plot2.pixels   = (100, int(100 * (height/2.0/pitch)))
-plot2.color_by = 'cell'
-
-plots = openmc.Plots([plot1, plot2])
-plots.export_to_xml()
-
