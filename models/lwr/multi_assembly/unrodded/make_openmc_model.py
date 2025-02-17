@@ -245,7 +245,10 @@ fis_u = openmc.Universe(cells=[fission_chamber_cell, tube_clad_cell_2, guide_tub
 assembly_bb = openmc.model.RectangularPrism(width = 17.0 * pitch, height = 17.0 * pitch)
 
 ### UO2 fueled assembly.
-uo2_assembly_cells = [
+uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
+uo2_assembly.pitch = (pitch, pitch)
+uo2_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+uo2_assembly.universes = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 1
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 2
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 3
@@ -264,15 +267,13 @@ uo2_assembly_cells = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 16
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
-
-uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
-uo2_assembly.pitch = (pitch, pitch)
-uo2_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-uo2_assembly.universes = uo2_assembly_cells
 uo2_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'UO2 Assembly Cell', region = -assembly_bb, fill = uo2_assembly)])
 
 ### MOX fueled assembly.
-mox_assembly_cells = [
+mox_assembly = openmc.RectLattice(name = 'MOX Assembly')
+mox_assembly.pitch = (pitch, pitch)
+mox_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+mox_assembly.universes = [
   [mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u], # 1
   [mox43_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox43_u], # 2
   [mox43_u, mox70_u, mox70_u, mox70_u, mox70_u, tub_u,   mox70_u, mox70_u, tub_u,   mox70_u, mox70_u, tub_u,   mox70_u, mox70_u, mox70_u, mox70_u, mox43_u], # 3
@@ -291,11 +292,6 @@ mox_assembly_cells = [
   [mox43_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox43_u], # 16
   [mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u]  # 17
 ]# 1        2        3        4        5        6        7        8        9        10       11       12       13       14       15       16       17
-
-mox_assembly = openmc.RectLattice(name = 'MOX Assembly')
-mox_assembly.pitch = (pitch, pitch)
-mox_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-mox_assembly.universes = mox_assembly_cells
 mox_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'MOX Assembly Cell', region = -assembly_bb, fill = mox_assembly)])
 
 ## The core region.
@@ -305,23 +301,20 @@ core_right = openmc.XPlane(x0 = 17.0 * pitch)
 core_back = openmc.YPlane(y0 = -17.0 * pitch)
 core_bb_xy = -core_front & +core_back & +core_left & -core_right
 
-core_cells = [
-  [uo2_assembly_uni, mox_assembly_uni],
-  [mox_assembly_uni, uo2_assembly_uni]
-]
 core_assembly = openmc.RectLattice(name = 'Core Assembly')
 core_assembly.pitch = (17.0 * pitch, 17.0 * pitch)
 core_assembly.lower_left = (-17.0 * pitch, -17.0 * pitch)
-core_assembly.universes = core_cells
+core_assembly.universes = [
+  [uo2_assembly_uni, mox_assembly_uni],
+  [mox_assembly_uni, uo2_assembly_uni]
+]
 
-core_z_planes = []
-for z in np.linspace(0.0, core_height, core_axial_slices + 1):
-  core_z_planes.append(openmc.ZPlane(z0 = z))
+core_z_planes = [ openmc.ZPlane(z0=z) for z in np.linspace(0.0, core_height, core_axial_slices + 1) ]
 core_z_planes[0].boundary_type = 'reflective'
 
-core_assembly_cells = []
-for i in range(core_axial_slices):
-  core_assembly_cells.append(openmc.Cell(name = 'Core Assembly Cell ' + str(i), region = core_bb_xy & +core_z_planes[i] & -core_z_planes[i + 1], fill = core_assembly))
+all_cells = []
+for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
+  all_cells.append(openmc.Cell(name = f'Core Assembly Cell {layer_idx}', region = core_bb_xy & +planes[0] & -planes[1], fill = core_assembly))
 
 ## The reflector region.
 refl_right = openmc.XPlane(x0 = 17.0 * pitch + reflector_t, boundary_type = 'vacuum')
@@ -331,11 +324,9 @@ refl_region = -core_front & +refl_back & +core_left & -refl_right & -refl_top & 
 refl_cell = openmc.Cell(name = 'Water Reflector')
 refl_cell.region = refl_region
 refl_cell.fill = h2o
+all_cells.append(refl_cell)
 
 ## The entire geometry.
-all_cells = [refl_cell]
-for c in core_assembly_cells:
-  all_cells.append(c)
 model_uni = openmc.Universe(cells = all_cells)
 #--------------------------------------------------------------------------------------------------------------------------#
 

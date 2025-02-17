@@ -1,13 +1,3 @@
-import openmc
-import numpy as np
-import openmc.universe
-from argparse import ArgumentParser
-
-ap = ArgumentParser()
-ap.add_argument('-n', dest='n_axial', type=int, default=1,
-                help='Number of axial core divisions')
-args = ap.parse_args()
-
 #--------------------------------------------------------------------------------------------------------------------------#
 # This is a modified version of the C5G7 reactor physics benchmark problem extension case as described in:                 #
 # "Benchmark on Deterministic Transport Calculations Without Spatial Homogenisation: MOX Fuel Assembly 3-D Extension Case" #
@@ -20,6 +10,16 @@ args = ap.parse_args()
 # [NEA/NSC/DOC(96)2]                                                                                                       #
 # https://www.oecd-nea.org/upload/docs/application/pdf/2020-01/nsc-doc96-02-rev2.pdf                                       #
 #--------------------------------------------------------------------------------------------------------------------------#
+
+import openmc
+import numpy as np
+import openmc.universe
+from argparse import ArgumentParser
+
+ap = ArgumentParser()
+ap.add_argument('-n', dest='n_axial', type=int, default=1,
+                help='Number of axial core divisions')
+args = ap.parse_args()
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Some geometric properties that can be modified to change the model.
@@ -271,7 +271,10 @@ h2o_u = openmc.Universe(cells=[water_cell])
 assembly_bb = openmc.model.RectangularPrism(width = 17.0 * pitch, height = 17.0 * pitch)
 
 ### UO2 fueled assembly.
-uo2_assembly_cells = [
+uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
+uo2_assembly.pitch = (pitch, pitch)
+uo2_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+uo2_assembly.universes = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 1
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 2
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, tub_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 3
@@ -290,15 +293,13 @@ uo2_assembly_cells = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 16
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
-
-uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
-uo2_assembly.pitch = (pitch, pitch)
-uo2_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-uo2_assembly.universes = uo2_assembly_cells
 uo2_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'UO2 Assembly Cell', region = -assembly_bb, fill = uo2_assembly)])
 
 ### UO2 fueled assembly with inserted control rods.
-uo2_rodded_assembly_cells = [
+uo2_rodded_assembly = openmc.RectLattice(name = 'Rodded UO2 Assembly')
+uo2_rodded_assembly.pitch = (pitch, pitch)
+uo2_rodded_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+uo2_rodded_assembly.universes = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 1
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 2
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, rod_u, uo2_u, uo2_u, rod_u, uo2_u, uo2_u, rod_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 3
@@ -317,15 +318,13 @@ uo2_rodded_assembly_cells = [
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u], # 16
   [uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u, uo2_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
-
-uo2_rodded_assembly = openmc.RectLattice(name = 'Rodded UO2 Assembly')
-uo2_rodded_assembly.pitch = (pitch, pitch)
-uo2_rodded_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-uo2_rodded_assembly.universes = uo2_rodded_assembly_cells
 uo2_rodded_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Rodded UO2 Assembly Cell', region = -assembly_bb, fill = uo2_rodded_assembly)])
 
 ### MOX fueled assembly.
-mox_assembly_cells = [
+mox_assembly = openmc.RectLattice(name = 'MOX Assembly')
+mox_assembly.pitch = (pitch, pitch)
+mox_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+mox_assembly.universes = [
   [mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u], # 1
   [mox43_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox43_u], # 2
   [mox43_u, mox70_u, mox70_u, mox70_u, mox70_u, tub_u,   mox70_u, mox70_u, tub_u,   mox70_u, mox70_u, tub_u,   mox70_u, mox70_u, mox70_u, mox70_u, mox43_u], # 3
@@ -344,15 +343,13 @@ mox_assembly_cells = [
   [mox43_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox70_u, mox43_u], # 16
   [mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u, mox43_u]  # 17
 ]# 1        2        3        4        5        6        7        8        9        10       11       12       13       14       15       16       17
-
-mox_assembly = openmc.RectLattice(name = 'MOX Assembly')
-mox_assembly.pitch = (pitch, pitch)
-mox_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-mox_assembly.universes = mox_assembly_cells
 mox_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'MOX Assembly Cell', region = -assembly_bb, fill = mox_assembly)])
 
 ### The portion of the upper reflector containing control rods.
-rodded_refl_cells = [
+rodded_rel_assembly = openmc.RectLattice(name = 'Rodded Reflector Assembly')
+rodded_rel_assembly.pitch = (pitch, pitch)
+rodded_rel_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+rodded_rel_assembly.universes = [
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 1
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 2
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, rod_u, h2o_u, h2o_u, rod_u, h2o_u, h2o_u, rod_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 3
@@ -371,15 +368,13 @@ rodded_refl_cells = [
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 16
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
-
-rodded_rel_assembly = openmc.RectLattice(name = 'Rodded Reflector Assembly')
-rodded_rel_assembly.pitch = (pitch, pitch)
-rodded_rel_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-rodded_rel_assembly.universes = rodded_refl_cells
 rodded_rel_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Rodded Reflector Assembly Cell', region = -assembly_bb, fill = rodded_rel_assembly)])
 
 ### The portion of the upper reflector containing guide tubes.
-unrodded_refl_cells = [
+unrodded_rel_assembly = openmc.RectLattice(name = 'Unrodded Reflector Assembly')
+unrodded_rel_assembly.pitch = (pitch, pitch)
+unrodded_rel_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
+unrodded_rel_assembly.universes = [
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 1
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 2
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, tub_u, h2o_u, h2o_u, tub_u, h2o_u, h2o_u, tub_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 3
@@ -398,11 +393,6 @@ unrodded_refl_cells = [
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u], # 16
   [h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u, h2o_u]  # 17
 ]# 1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17
-
-unrodded_rel_assembly = openmc.RectLattice(name = 'Unrodded Reflector Assembly')
-unrodded_rel_assembly.pitch = (pitch, pitch)
-unrodded_rel_assembly.lower_left = (-17.0 * pitch / 2.0, -17.0 * pitch / 2.0)
-unrodded_rel_assembly.universes = unrodded_refl_cells
 unrodded_rel_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Unrodded Reflector Assembly Cell', region = -assembly_bb, fill = unrodded_rel_assembly)])
 
 ## The core region.
@@ -421,14 +411,12 @@ core_assembly.pitch = (17.0 * pitch, 17.0 * pitch)
 core_assembly.lower_left = (-17.0 * pitch, -17.0 * pitch)
 core_assembly.universes = core_cells
 
-core_z_planes = []
-for z in np.linspace(0.0, core_height, core_axial_slices + 1):
-  core_z_planes.append(openmc.ZPlane(z0 = z))
+core_z_planes = [ openmc.ZPlane(z0=z) for z in np.linspace(0.0, core_height, core_axial_slices + 1) ]
 core_z_planes[0].boundary_type = 'reflective'
 
-core_assembly_cells = []
-for i in range(core_axial_slices):
-  core_assembly_cells.append(openmc.Cell(name = 'Core Assembly Cell ' + str(i), region = core_bb_xy & +core_z_planes[i] & -core_z_planes[i + 1], fill = core_assembly))
+all_cells = []
+for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
+  all_cells.append(openmc.Cell(name = f'Core Assembly Cell {layer_idx}', region = core_bb_xy & +planes[0] & -planes[1], fill = core_assembly))
 
 ## The reflector region.
 refl_right = openmc.XPlane(x0 = 17.0 * pitch + reflector_t, boundary_type = 'vacuum')
@@ -436,26 +424,23 @@ refl_back = openmc.YPlane(y0 = -17.0 * pitch - reflector_t, boundary_type = 'vac
 refl_top = openmc.ZPlane(z0 = core_height + reflector_t, boundary_type = 'vacuum')
 
 ### The portion of the reflector above the core (penetrated by control rods and guide tubes).
-upper_reflector_cells = [
-  [rodded_rel_assembly_uni,   unrodded_rel_assembly_uni],
-  [unrodded_rel_assembly_uni, unrodded_rel_assembly_uni]
-]
 upper_refl_assembly = openmc.RectLattice(name = 'Upper Reflector Assembly')
 upper_refl_assembly.pitch = (17.0 * pitch, 17.0 * pitch)
 upper_refl_assembly.lower_left = (-17.0 * pitch, -17.0 * pitch)
-upper_refl_assembly.universes = upper_reflector_cells
-upper_refl_cell = openmc.Cell(name = 'Upper Reflector Cell', region = +core_z_planes[-1] & -refl_top & core_bb_xy, fill = upper_refl_assembly)
+upper_refl_assembly.universes = [
+  [rodded_rel_assembly_uni,   unrodded_rel_assembly_uni],
+  [unrodded_rel_assembly_uni, unrodded_rel_assembly_uni]
+]
+all_cells.append(openmc.Cell(name = 'Upper Reflector Cell', region = +core_z_planes[-1] & -refl_top & core_bb_xy, fill = upper_refl_assembly))
 
 ### The remainder of the reflector.
 refl_region = -core_front & +refl_back & +core_left & -refl_right & -refl_top & +core_z_planes[0] & ~(core_bb_xy & +core_z_planes[0] & -refl_top)
 refl_cell = openmc.Cell(name = 'Water Reflector')
 refl_cell.region = refl_region
 refl_cell.fill = h2o
+all_cells.append(refl_cell)
 
 ## The entire geometry.
-all_cells = [refl_cell, upper_refl_cell]
-for c in core_assembly_cells:
-  all_cells.append(c)
 model_uni = openmc.Universe(cells = all_cells)
 #--------------------------------------------------------------------------------------------------------------------------#
 
