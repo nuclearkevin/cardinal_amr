@@ -14,13 +14,13 @@
 import sys
 sys.path.append("../")
 
-import openmc
 import numpy as np
-import openmc.universe
 from argparse import ArgumentParser
-import common as geom
+
+import openmc
+import openmc_common as geom
 import openmc_materials as mats
-import openmc_pincells as p
+import openmc_pincells as pins
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -36,15 +36,15 @@ core_z_planes[0].boundary_type = 'reflective'
 all_cells = []
 for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
   layer = +planes[0] & -planes[1]
-  all_cells.append(openmc.Cell(fill=p.uo2_u, region=-p.fuel_pin_or & layer, name=f'Fuel {layer_idx}'))
-  all_cells.append(openmc.Cell(fill=None, region=+p.fuel_pin_or & -p.fuel_gap_1_or & layer, name=f'Gap {layer_idx}'))
-  all_cells.append(openmc.Cell(fill=mats.zr, region=+p.fuel_gap_1_or & -p.fuel_zr_or & layer, name=f'Clad {layer_idx}'))
-  all_cells.append(openmc.Cell(fill=mats.h2o, region=+p.fuel_zr_or & layer & -p.fuel_bb, name=f'Water {layer_idx}'))
+  all_cells.append(openmc.Cell(fill=pins.uo2_u, region=-pins.fuel_pin_or & layer, name=f'Fuel {layer_idx}'))
+  all_cells.append(openmc.Cell(fill=None, region=+pins.fuel_pin_or & -pins.fuel_gap_1_or & layer, name=f'Gap {layer_idx}'))
+  all_cells.append(openmc.Cell(fill=mats.zr, region=+pins.fuel_gap_1_or & -pins.fuel_zr_or & layer, name=f'Clad {layer_idx}'))
+  all_cells.append(openmc.Cell(fill=mats.h2o, region=+pins.fuel_zr_or & layer & -pins.fuel_bb, name=f'Water {layer_idx}'))
 
 ## Add the top axial water reflector.
 ## Set the boundary condition on the topmost plane to vacuum.
 refl_top = openmc.ZPlane(z0 = geom.core_height + geom.reflector_t, boundary_type = 'vacuum')
-all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats.h2o, region=-p.fuel_bb & -refl_top & +core_z_planes[-1]))
+all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats.h2o, region=-pins.fuel_bb & -refl_top & +core_z_planes[-1]))
 #--------------------------------------------------------------------------------------------------------------------------#
 
 #--------------------------------------------------------------------------------------------------------------------------#
@@ -53,7 +53,7 @@ pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = 
 
 ## The simulation settings.
 pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-geom.pitch / 2.0, -geom.pitch / 2.0, 0.0),
-                                                                                   upper_right = (geom.pitch / 2.0, geom.pitch / 2.0, 192.78)))]
+                                                                                   upper_right = (geom.pitch / 2.0, geom.pitch / 2.0, geom.core_height)))]
 
 pincell_model.settings.batches = 100
 pincell_model.settings.generations_per_batch = 10
