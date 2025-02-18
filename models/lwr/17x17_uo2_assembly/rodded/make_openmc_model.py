@@ -14,13 +14,13 @@
 import sys
 sys.path.append("../../")
 
-import openmc
 import numpy as np
-import openmc.universe
 from argparse import ArgumentParser
-import common as geom
+
+import openmc
+import openmc_common as geom
 import openmc_materials as mats
-import openmc_assemblies as a
+import openmc_assemblies as asmb
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -34,10 +34,10 @@ core_z_planes[0].boundary_type = 'reflective'
 
 all_cells = []
 for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
-  all_cells.append(openmc.Cell(name = f'UO2 Assembly Cell {layer_idx}', region = -a.assembly_bb & +planes[0] & -planes[1], fill = a.uo2_assembly))
+  all_cells.append(openmc.Cell(name = f'UO2 Assembly Cell {layer_idx}', region = -asmb.assembly_bb & +planes[0] & -planes[1], fill = asmb.uo2_assembly))
 
 refl_top = openmc.ZPlane(z0 = geom.core_height + geom.reflector_t, boundary_type = 'vacuum')
-all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = a.rodded_rel_assembly_uni, region=-a.assembly_bb & -refl_top & +core_z_planes[-1]))
+all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = asmb.rodded_ref_assembly_uni, region=-asmb.assembly_bb & -refl_top & +core_z_planes[-1]))
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.

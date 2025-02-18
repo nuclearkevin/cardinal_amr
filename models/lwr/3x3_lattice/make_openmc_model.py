@@ -14,13 +14,13 @@
 import sys
 sys.path.append("../")
 
-import openmc
 import numpy as np
-import openmc.universe
 from argparse import ArgumentParser
-import common as geom
+
+import openmc
+import openmc_common as geom
 import openmc_materials as mats
-import openmc_pincells as p
+import openmc_pincells as pins
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -36,9 +36,9 @@ assembly = openmc.RectLattice(name='Fuel Assembly')
 assembly.pitch = (geom.pitch, geom.pitch)
 assembly.lower_left = (-3.0 * geom.pitch / 2.0, -3.0 * geom.pitch / 2.0)
 assembly.universes = [
-  [p.uo2_u, p.uo2_u, p.uo2_u],
-  [p.uo2_u, p.uo2_u, p.uo2_u],
-  [p.uo2_u, p.uo2_u, p.uo2_u]
+  [pins.uo2_u, pins.uo2_u, pins.uo2_u],
+  [pins.uo2_u, pins.uo2_u, pins.uo2_u],
+  [pins.uo2_u, pins.uo2_u, pins.uo2_u]
 ]
 assembly_bb = openmc.model.RectangularPrism(width = 3.0 * geom.pitch, height = 3.0 * geom.pitch, origin = (0.0, 0.0), boundary_type = 'reflective')
 
@@ -57,7 +57,7 @@ mult_pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cel
 
 ## The simulation settings.
 mult_pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-3.0 * geom.pitch / 2.0, -3.0 * geom.pitch / 2.0, 0.0),
-                                                                                        upper_right = (3.0 * geom.pitch / 2.0, 3.0 * geom.pitch / 2.0, 192.78)))]
+                                                                                        upper_right = (3.0 * geom.pitch / 2.0, 3.0 * geom.pitch / 2.0, geom.core_height)))]
 
 mult_pincell_model.settings.batches = 100
 mult_pincell_model.settings.generations_per_batch = 10

@@ -12,7 +12,7 @@
 #--------------------------------------------------------------------------------------------------------------------------#
 
 import openmc
-import common as geom
+import openmc_common as geom
 import openmc_pincells as p
 
 #--------------------------------------------------------------------------------------------------------------------------#
@@ -96,10 +96,10 @@ mox_assembly.universes = [
 mox_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'MOX Assembly Cell', region = -assembly_bb, fill = mox_assembly)])
 
 ### The portion of the upper reflector containing control rods.
-rodded_rel_assembly = openmc.RectLattice(name = 'Rodded Reflector Assembly')
-rodded_rel_assembly.pitch = (geom.pitch, geom.pitch)
-rodded_rel_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
-rodded_rel_assembly.universes = [
+rodded_ref_assembly = openmc.RectLattice(name = 'Rodded Reflector Assembly')
+rodded_ref_assembly.pitch = (geom.pitch, geom.pitch)
+rodded_ref_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+rodded_ref_assembly.universes = [
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 1
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 2
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.rod_u, p.h2o_u, p.h2o_u, p.rod_u, p.h2o_u, p.h2o_u, p.rod_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 3
@@ -118,13 +118,13 @@ rodded_rel_assembly.universes = [
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 16
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u]  # 17
 ]# 1        2        3        4        5        6        7        8        9        10       11       12       13       14       15       16       17
-rodded_rel_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Rodded Reflector Assembly Cell', region = -assembly_bb, fill = rodded_rel_assembly)])
+rodded_ref_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Rodded Reflector Assembly Cell', region = -assembly_bb, fill = rodded_ref_assembly)])
 
 ### The portion of the upper reflector containing guide tubes.
-unrodded_rel_assembly = openmc.RectLattice(name = 'Unrodded Reflector Assembly')
-unrodded_rel_assembly.pitch = (geom.pitch, geom.pitch)
-unrodded_rel_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
-unrodded_rel_assembly.universes = [
+unrodded_ref_assembly = openmc.RectLattice(name = 'Unrodded Reflector Assembly')
+unrodded_ref_assembly.pitch = (geom.pitch, geom.pitch)
+unrodded_ref_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+unrodded_ref_assembly.universes = [
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 1
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 2
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.tub_u, p.h2o_u, p.h2o_u, p.tub_u, p.h2o_u, p.h2o_u, p.tub_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 3
@@ -143,5 +143,5 @@ unrodded_rel_assembly.universes = [
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u], # 16
   [p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u, p.h2o_u]  # 17
 ]# 1        2        3        4        5        6        7        8        9        10       11       12       13       14       15       16       17
-unrodded_rel_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Unrodded Reflector Assembly Cell', region = -assembly_bb, fill = unrodded_rel_assembly)])
+unrodded_ref_assembly_uni = openmc.Universe(cells = [openmc.Cell(name = 'Unrodded Reflector Assembly Cell', region = -assembly_bb, fill = unrodded_ref_assembly)])
 #--------------------------------------------------------------------------------------------------------------------------#

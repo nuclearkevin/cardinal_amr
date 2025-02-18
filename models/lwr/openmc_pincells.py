@@ -13,7 +13,7 @@
 
 import openmc
 import numpy as np
-import common as geom
+import openmc_common as geom
 import openmc_materials as mats
 
 #--------------------------------------------------------------------------------------------------------------------------#

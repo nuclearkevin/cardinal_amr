@@ -14,13 +14,13 @@
 import sys
 sys.path.append("../../")
 
-import openmc
 import numpy as np
-import openmc.universe
 from argparse import ArgumentParser
-import common as geom
+
+import openmc
+import openmc_common as geom
 import openmc_materials as mats
-import openmc_assemblies as a
+import openmc_assemblies as asmb
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -37,8 +37,8 @@ core_back = openmc.YPlane(y0 = -17.0 * geom.pitch)
 core_bb_xy = -core_front & +core_back & +core_left & -core_right
 
 core_cells = [
-  [a.uo2_rodded_assembly_uni, a.mox_assembly_uni],
-  [a.mox_assembly_uni,        a.uo2_assembly_uni]
+  [asmb.uo2_rodded_assembly_uni, asmb.mox_assembly_uni],
+  [asmb.mox_assembly_uni,        asmb.uo2_assembly_uni]
 ]
 core_assembly = openmc.RectLattice(name = 'Core Assembly')
 core_assembly.pitch = (17.0 * geom.pitch, 17.0 * geom.pitch)
@@ -62,8 +62,8 @@ upper_refl_assembly = openmc.RectLattice(name = 'Upper Reflector Assembly')
 upper_refl_assembly.pitch = (17.0 * geom.pitch, 17.0 * geom.pitch)
 upper_refl_assembly.lower_left = (-17.0 * geom.pitch, -17.0 * geom.pitch)
 upper_refl_assembly.universes = [
-  [a.rodded_rel_assembly_uni,   a.unrodded_rel_assembly_uni],
-  [a.unrodded_rel_assembly_uni, a.unrodded_rel_assembly_uni]
+  [asmb.rodded_ref_assembly_uni,   asmb.unrodded_ref_assembly_uni],
+  [asmb.unrodded_ref_assembly_uni, asmb.unrodded_ref_assembly_uni]
 ]
 all_cells.append(openmc.Cell(name = 'Upper Reflector Cell', region = +core_z_planes[-1] & -refl_top & core_bb_xy, fill = upper_refl_assembly))
 
