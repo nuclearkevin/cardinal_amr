@@ -15,3 +15,6 @@
 *.png
 *.gif
 *.zip
+
+# Python stuff.
+*.pyc
