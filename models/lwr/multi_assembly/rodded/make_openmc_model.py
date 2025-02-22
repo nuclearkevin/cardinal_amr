@@ -19,8 +19,8 @@ from argparse import ArgumentParser
 
 import openmc
 import openmc_common as geom
-import openmc_materials as mats
-import openmc_assemblies as asmb
+from openmc_materials import MATERIALS as mats
+from openmc_assemblies import ASSEMBLIES as asmb
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -37,8 +37,8 @@ core_back = openmc.YPlane(y0 = -17.0 * geom.pitch)
 core_bb_xy = -core_front & +core_back & +core_left & -core_right
 
 core_cells = [
-  [asmb.uo2_rodded_assembly_uni, asmb.mox_assembly_uni],
-  [asmb.mox_assembly_uni,        asmb.uo2_assembly_uni]
+  [asmb['UO2_ROD'], asmb['MOX']],
+  [asmb['MOX'],     asmb['UO2']]
 ]
 core_assembly = openmc.RectLattice(name = 'Core Assembly')
 core_assembly.pitch = (17.0 * geom.pitch, 17.0 * geom.pitch)
@@ -62,8 +62,8 @@ upper_refl_assembly = openmc.RectLattice(name = 'Upper Reflector Assembly')
 upper_refl_assembly.pitch = (17.0 * geom.pitch, 17.0 * geom.pitch)
 upper_refl_assembly.lower_left = (-17.0 * geom.pitch, -17.0 * geom.pitch)
 upper_refl_assembly.universes = [
-  [asmb.rodded_ref_assembly_uni,   asmb.unrodded_ref_assembly_uni],
-  [asmb.unrodded_ref_assembly_uni, asmb.unrodded_ref_assembly_uni]
+  [asmb['REF_ROD'], asmb['REF']],
+  [asmb['REF'],     asmb['REF']]
 ]
 all_cells.append(openmc.Cell(name = 'Upper Reflector Cell', region = +core_z_planes[-1] & -refl_top & core_bb_xy, fill = upper_refl_assembly))
 
@@ -71,7 +71,7 @@ all_cells.append(openmc.Cell(name = 'Upper Reflector Cell', region = +core_z_pla
 refl_region = -core_front & +refl_back & +core_left & -refl_right & -refl_top & +core_z_planes[0] & ~(core_bb_xy & +core_z_planes[0] & -refl_top)
 refl_cell = openmc.Cell(name = 'Water Reflector')
 refl_cell.region = refl_region
-refl_cell.fill = mats.h2o
+refl_cell.fill = mats['H2O']
 all_cells.append(refl_cell)
 
 ## The entire geometry.
@@ -80,7 +80,7 @@ model_uni = openmc.Universe(cells = all_cells)
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-c5g7_model = openmc.Model(geometry = openmc.Geometry(model_uni), materials = openmc.Materials([mats.mox_4_3, mats.mox_7_0, mats.mox_8_7, mats.uo2, mats.h2o, mats.bc4, mats.fiss, mats.zr, mats.al]))
+c5g7_model = openmc.Model(geometry = openmc.Geometry(model_uni), materials = openmc.Materials([mats['MOX_43'], mats['MOX_70'], mats['MOX_87'], mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C'], mats['BC4']]))
 
 ## The simulation settings.
 c5g7_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-17.0 * geom.pitch, -17.0 * geom.pitch, 0.0), upper_right = (17.0 * geom.pitch, 17.0 * geom.pitch, geom.core_height)))]

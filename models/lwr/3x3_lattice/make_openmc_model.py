@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 
 import openmc
 import openmc_common as geom
-import openmc_materials as mats
+from openmc_materials import MATERIALS as mats
 import openmc_pincells as pins
 
 ap = ArgumentParser()
@@ -48,12 +48,12 @@ for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
 
 ## Add the top axial water reflector.
 refl_top = openmc.ZPlane(z0 = geom.core_height + geom.reflector_t, boundary_type = 'vacuum')
-all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats.h2o, region=-assembly_bb & -refl_top & +core_z_planes[-1]))
+all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats['H2O'], region=-assembly_bb & -refl_top & +core_z_planes[-1]))
 #--------------------------------------------------------------------------------------------------------------------------#
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-mult_pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats.uo2, mats.h2o, mats.zr]))
+mult_pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['ZR_C']]))
 
 ## The simulation settings.
 mult_pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-3.0 * geom.pitch / 2.0, -3.0 * geom.pitch / 2.0, 0.0),
