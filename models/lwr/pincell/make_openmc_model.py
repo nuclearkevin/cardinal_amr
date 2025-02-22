@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 
 import openmc
 import openmc_common as geom
-import openmc_materials as mats
+from openmc_materials import MATERIALS as mats
 import openmc_pincells as pins
 
 ap = ArgumentParser()
@@ -29,27 +29,28 @@ args = ap.parse_args()
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Geometry definitions.
+pins.fuel_bb.boundary_type = 'reflective'
 core_z_planes = [ openmc.ZPlane(z0=z) for z in np.linspace(0.0, geom.core_height, args.n_axial + 1) ]
 core_z_planes[0].boundary_type = 'reflective'
 
-## Create the actual pincells.
+## Create the actual pincell.
 all_cells = []
 for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
   layer = +planes[0] & -planes[1]
-  all_cells.append(openmc.Cell(fill=pins.uo2_u, region=-pins.fuel_pin_or & layer, name=f'Fuel {layer_idx}'))
-  all_cells.append(openmc.Cell(fill=None, region=+pins.fuel_pin_or & -pins.fuel_gap_1_or & layer, name=f'Gap {layer_idx}'))
-  all_cells.append(openmc.Cell(fill=mats.zr, region=+pins.fuel_gap_1_or & -pins.fuel_zr_or & layer, name=f'Clad {layer_idx}'))
-  all_cells.append(openmc.Cell(fill=mats.h2o, region=+pins.fuel_zr_or & layer & -pins.fuel_bb, name=f'Water {layer_idx}'))
+  all_cells.append(openmc.Cell(fill = mats['UO2'],  region=-pins.fuel_pin_or   & layer,                       name=f'Fuel {layer_idx}'))
+  all_cells.append(openmc.Cell(fill = None,         region=+pins.fuel_pin_or   & -pins.fuel_gap_1_or & layer, name=f'Gap {layer_idx}'))
+  all_cells.append(openmc.Cell(fill = mats['ZR_C'], region=+pins.fuel_gap_1_or & -pins.fuel_zr_or & layer,    name=f'Clad {layer_idx}'))
+  all_cells.append(openmc.Cell(fill = mats['H2O'],  region=+pins.fuel_zr_or    & layer & -pins.fuel_bb,       name=f'Water {layer_idx}'))
 
 ## Add the top axial water reflector.
 ## Set the boundary condition on the topmost plane to vacuum.
 refl_top = openmc.ZPlane(z0 = geom.core_height + geom.reflector_t, boundary_type = 'vacuum')
-all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats.h2o, region=-pins.fuel_bb & -refl_top & +core_z_planes[-1]))
+all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats['H2O'], region=-pins.fuel_bb & -refl_top & +core_z_planes[-1]))
 #--------------------------------------------------------------------------------------------------------------------------#
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats.uo2, mats.h2o, mats.zr]))
+pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['ZR_C']]))
 
 ## The simulation settings.
 pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-geom.pitch / 2.0, -geom.pitch / 2.0, 0.0),

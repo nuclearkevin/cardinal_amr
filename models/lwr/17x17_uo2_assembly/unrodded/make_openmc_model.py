@@ -19,8 +19,9 @@ from argparse import ArgumentParser
 
 import openmc
 import openmc_common as geom
-import openmc_materials as mats
-import openmc_assemblies as asmb
+from openmc_materials import MATERIALS as mats
+from openmc_assemblies import ASSEMBLIES as asmb
+from openmc_assemblies import assembly_bb
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -29,19 +30,20 @@ args = ap.parse_args()
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Geometry definitions.
+assembly_bb.boundary_type = 'reflective'
 core_z_planes = [ openmc.ZPlane(z0=z) for z in np.linspace(0.0, geom.core_height, args.n_axial + 1) ]
 core_z_planes[0].boundary_type = 'reflective'
 
 all_cells = []
 for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
-  all_cells.append(openmc.Cell(name = f'UO2 Assembly Cell {layer_idx}', region = -asmb.assembly_bb & +planes[0] & -planes[1], fill = asmb.uo2_assembly))
+  all_cells.append(openmc.Cell(name = f'UO2 Assembly Cell {layer_idx}', region = -assembly_bb & +planes[0] & -planes[1], fill = asmb['UO2']))
 
 refl_top = openmc.ZPlane(z0 = geom.core_height + geom.reflector_t, boundary_type = 'vacuum')
-all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = asmb.unrodded_ref_assembly_uni, region=-asmb.assembly_bb & -refl_top & +core_z_planes[-1]))
+all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = asmb['REF'], region=-assembly_bb & -refl_top & +core_z_planes[-1]))
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats.uo2, mats.h2o, mats.fiss, mats.zr, mats.al]))
+c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C']]))
 
 ## The simulation settings.
 c5g7_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0, 0.0),
