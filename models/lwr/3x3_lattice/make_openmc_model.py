@@ -35,7 +35,7 @@ core_z_planes[0].boundary_type = 'reflective'
 
 assembly = openmc.RectLattice(name='Fuel Assembly')
 assembly.pitch = (geom.pitch, geom.pitch)
-assembly.lower_left = (-3.0 * geom.pitch / 2.0, -3.0 * geom.pitch / 2.0)
+assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0)
 assembly.universes = [
   [pins['UO2'], pins['UO2'], pins['UO2']],
   [pins['UO2'], pins['UO2'], pins['UO2']],
