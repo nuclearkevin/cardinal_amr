@@ -18,13 +18,14 @@ from openmc_pincells import PINCELLS as p
 #--------------------------------------------------------------------------------------------------------------------------#
 # Geometry definitions.
 ## The assemblies.
+pins_per_axis = 17.0
 ASSEMBLIES = {}
-assembly_bb = openmc.model.RectangularPrism(width = 17.0 * geom.pitch, height = 17.0 * geom.pitch)
+assembly_bb = openmc.model.RectangularPrism(width = pins_per_axis * geom.pitch, height = pins_per_axis * geom.pitch)
 
 ### UO2 fueled assembly.
 uo2_assembly = openmc.RectLattice(name = 'UO2 Assembly')
 uo2_assembly.pitch = (geom.pitch, geom.pitch)
-uo2_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+uo2_assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0)
 uo2_assembly.universes = [
   [p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2']], # 1
   [p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2']], # 2
@@ -49,7 +50,7 @@ ASSEMBLIES['UO2'] = openmc.Universe(cells = [openmc.Cell(name = 'UO2 Assembly Ce
 ### UO2 fueled assembly with inserted control rods.
 uo2_rodded_assembly = openmc.RectLattice(name = 'Rodded UO2 Assembly')
 uo2_rodded_assembly.pitch = (geom.pitch, geom.pitch)
-uo2_rodded_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+uo2_rodded_assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0)
 uo2_rodded_assembly.universes = [
   [p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2']], # 1
   [p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2'], p['UO2']], # 2
@@ -74,7 +75,7 @@ ASSEMBLIES['UO2_ROD'] = openmc.Universe(cells = [openmc.Cell(name = 'Rodded UO2 
 ### MOX fueled assembly.
 mox_assembly = openmc.RectLattice(name = 'MOX Assembly')
 mox_assembly.pitch = (geom.pitch, geom.pitch)
-mox_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+mox_assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0)
 mox_assembly.universes = [
   [p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43'], p['MOX43']], # 1
   [p['MOX43'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX70'], p['MOX43']], # 2
@@ -99,7 +100,7 @@ ASSEMBLIES['MOX'] = openmc.Universe(cells = [openmc.Cell(name = 'MOX Assembly Ce
 ### The portion of the upper reflector containing control rods.
 rodded_ref_assembly = openmc.RectLattice(name = 'Rodded Reflector Assembly')
 rodded_ref_assembly.pitch = (geom.pitch, geom.pitch)
-rodded_ref_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+rodded_ref_assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0)
 rodded_ref_assembly.universes = [
   [p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O']], # 1
   [p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O']], # 2
@@ -124,7 +125,7 @@ ASSEMBLIES['REF_ROD'] = openmc.Universe(cells = [openmc.Cell(name = 'Rodded Refl
 ### The portion of the upper reflector containing guide tubes.
 unrodded_ref_assembly = openmc.RectLattice(name = 'Unrodded Reflector Assembly')
 unrodded_ref_assembly.pitch = (geom.pitch, geom.pitch)
-unrodded_ref_assembly.lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0)
+unrodded_ref_assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0)
 unrodded_ref_assembly.universes = [
   [p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O']], # 1
   [p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O'], p['H2O']], # 2
