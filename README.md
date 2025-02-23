@@ -7,6 +7,8 @@ The models can be found in `/models/*`; each consists of the following files:
 - A Cardinal input file to generate the initial unstructured mesh for fission power / flux tallies (`mesh.i`).
 - A Cardinal input file which creates an unstructured mesh tally using the initial mesh and runs OpenMC (`openmc.i`).
 
+The Python files include a command line arguement (`-n`) to specify the number of fuel axial subdivisions in the CSG geometry. This can be used to investigate the impact of AMR on temperature/density feedback that is applied to the underlying OpenMC geometry.
+
 At present this repository contains the following models:
 
 - Light Water Reactor (`/models/lwr/*`)
