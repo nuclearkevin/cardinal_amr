@@ -21,7 +21,7 @@ import openmc
 import openmc_common as geom
 from openmc_materials import MATERIALS as mats
 from openmc_assemblies import ASSEMBLIES as asmb
-from openmc_assemblies import assembly_bb
+from openmc_assemblies import assembly_bb, pins_per_axis
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -46,8 +46,8 @@ all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = asmb['REF_ROD']
 c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C'], mats['BC4']]))
 
 ## The simulation settings.
-c5g7_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-17.0 * geom.pitch / 2.0, -17.0 * geom.pitch / 2.0, 0.0),
-                                                                                upper_right = (17.0 * geom.pitch / 2.0, 17.0 * geom.pitch / 2.0, geom.core_height)))]
+c5g7_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0, 0.0),
+                                                                                upper_right = (pins_per_axis * geom.pitch / 2.0,  pins_per_axis * geom.pitch / 2.0, geom.core_height)))]
 c5g7_model.settings.batches = 100
 c5g7_model.settings.generations_per_batch = 10
 c5g7_model.settings.inactive = 10

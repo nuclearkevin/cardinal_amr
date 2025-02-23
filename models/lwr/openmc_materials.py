@@ -81,10 +81,11 @@ MATERIAL_COMP = {
 MATERIALS = {}
 for mat_name, mat_comp in MATERIAL_COMP.items():
   MATERIALS[mat_name] = openmc.Material(name = mat_name, temperature = 293.15)
+  density = np.sum(np.array(list(mat_comp.values())))
   for nuclide, comp in mat_comp.items():
     if nuclide[-1].isdigit():
-      MATERIALS[mat_name].add_nuclide(nuclide, comp / np.sum(np.array(list(mat_comp.values()))), percent_type = 'ao')
+      MATERIALS[mat_name].add_nuclide(nuclide, comp / density, percent_type = 'ao')
     else:
-      MATERIALS[mat_name].add_element(nuclide, comp / np.sum(np.array(list(mat_comp.values()))), percent_type = 'ao')
-  MATERIALS[mat_name].set_density('atom/cm3', 1.0e24 * np.sum(np.array(list(mat_comp.values()))))
+      MATERIALS[mat_name].add_element(nuclide, comp / density, percent_type = 'ao')
+  MATERIALS[mat_name].set_density('atom/cm3', 1.0e24 * density)
 #--------------------------------------------------------------------------------------------------------------------------#

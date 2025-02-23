@@ -20,7 +20,7 @@ from argparse import ArgumentParser
 import openmc
 import openmc_common as geom
 from openmc_materials import MATERIALS as mats
-import openmc_pincells as pins
+from openmc_pincells import PINCELLS as pins
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -29,6 +29,7 @@ args = ap.parse_args()
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Geometry definitions.
+pins_per_axis = 3.0
 core_z_planes = [ openmc.ZPlane(z0=z) for z in np.linspace(0.0, geom.core_height, args.n_axial + 1) ]
 core_z_planes[0].boundary_type = 'reflective'
 
@@ -36,11 +37,11 @@ assembly = openmc.RectLattice(name='Fuel Assembly')
 assembly.pitch = (geom.pitch, geom.pitch)
 assembly.lower_left = (-3.0 * geom.pitch / 2.0, -3.0 * geom.pitch / 2.0)
 assembly.universes = [
-  [pins.uo2_u, pins.uo2_u, pins.uo2_u],
-  [pins.uo2_u, pins.uo2_u, pins.uo2_u],
-  [pins.uo2_u, pins.uo2_u, pins.uo2_u]
+  [pins['UO2'], pins['UO2'], pins['UO2']],
+  [pins['UO2'], pins['UO2'], pins['UO2']],
+  [pins['UO2'], pins['UO2'], pins['UO2']]
 ]
-assembly_bb = openmc.model.RectangularPrism(width = 3.0 * geom.pitch, height = 3.0 * geom.pitch, origin = (0.0, 0.0), boundary_type = 'reflective')
+assembly_bb = openmc.model.RectangularPrism(width = pins_per_axis * geom.pitch, height = pins_per_axis * geom.pitch, origin = (0.0, 0.0), boundary_type = 'reflective')
 
 all_cells = []
 for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
@@ -56,8 +57,8 @@ all_cells.append(openmc.Cell(name='Axial Reflector Cell', fill = mats['H2O'], re
 mult_pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['ZR_C']]))
 
 ## The simulation settings.
-mult_pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-3.0 * geom.pitch / 2.0, -3.0 * geom.pitch / 2.0, 0.0),
-                                                                                        upper_right = (3.0 * geom.pitch / 2.0, 3.0 * geom.pitch / 2.0, geom.core_height)))]
+mult_pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0, 0.0),
+                                                                                        upper_right = (pins_per_axis * geom.pitch / 2.0,  pins_per_axis * geom.pitch / 2.0, geom.core_height)))]
 
 mult_pincell_model.settings.batches = 100
 mult_pincell_model.settings.generations_per_batch = 10
