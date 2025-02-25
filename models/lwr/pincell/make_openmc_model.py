@@ -40,7 +40,7 @@ for layer_idx, planes in enumerate(zip(core_z_planes[:-1], core_z_planes[1:])):
   all_cells.append(openmc.Cell(fill = mats['UO2'],  region = pins.fuel_pin_region & layer,                     name=f'Fuel {layer_idx}'))
   all_cells.append(openmc.Cell(fill = None,         region = pins.fuel_gap_region & -pins.fuel_gap_or & layer, name=f'Gap {layer_idx}'))
   all_cells.append(openmc.Cell(fill = mats['ZR_C'], region = pins.fuel_clad_region & -pins.fuel_zr_or & layer, name=f'Clad {layer_idx}'))
-  all_cells.append(openmc.Cell(fill = mats['H2O'],  region = pins.fuel_water_region & layer & -pins.fuel_bb,   name=f'Water {layer_idx}'))
+  all_cells.append(openmc.Cell(fill = mats['H2O'],  region = pins.fuel_water_region & layer,   name=f'Water {layer_idx}'))
 
 ## Add the top axial water reflector.
 ## Set the boundary condition on the topmost plane to vacuum.
