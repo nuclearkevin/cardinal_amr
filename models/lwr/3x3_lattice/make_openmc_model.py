@@ -62,5 +62,10 @@ mult_pincell_model.settings.generations_per_batch = 10
 mult_pincell_model.settings.inactive = 10
 mult_pincell_model.settings.particles = 1000
 
+mult_pincell_model.settings.temperature = {'default': 293.15,
+                                           'method': 'interpolation',
+                                           'range': (294.0, 3000.0),
+                                           'tolerance': 1000.0}
+
 mult_pincell_model.export_to_model_xml()
 #--------------------------------------------------------------------------------------------------------------------------#
