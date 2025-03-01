@@ -30,8 +30,8 @@ args = ap.parse_args()
 #--------------------------------------------------------------------------------------------------------------------------#
 # Geometry definitions.
 pins.fuel_bb.boundary_type = 'reflective'
-fuel_center = openmc.ZPlane(z0=0.0, boundary_type='reflective')
-fuel_top = openmc.ZPlane(z0=geom.core_height)
+fuel_center = openmc.ZPlane(z0 = 0.0, boundary_type = 'reflective')
+fuel_top = openmc.ZPlane(z0 = geom.core_height)
 
 core_assembly = openmc.RectLattice(name = 'UO2 Pincell Lattice')
 core_assembly.pitch = (geom.pitch, geom.pitch, geom.core_height / args.n_axial)
