@@ -21,6 +21,7 @@ import openmc
 import openmc_common as geom
 from openmc_materials import MATERIALS as mats
 import openmc_pincells as pins
+from openmc_settings import COMMON_SETTINGS as settings
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -50,18 +51,9 @@ refl_cell = openmc.Cell(name='Axial Reflector Cell', fill = mats['H2O'], region=
 pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [core_assembly_cell, refl_cell])), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['ZR_C']]))
 
 ## The simulation settings.
+pincell_model.settings = settings
 pincell_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-geom.pitch / 2.0, -geom.pitch / 2.0, 0.0),
                                                                                    upper_right = (geom.pitch / 2.0, geom.pitch / 2.0, geom.core_height)))]
-
-pincell_model.settings.batches = 100
-pincell_model.settings.generations_per_batch = 10
-pincell_model.settings.inactive = 10
-pincell_model.settings.particles = 1000
-
-pincell_model.settings.temperature = {'default': 293.15,
-                                      'method': 'interpolation',
-                                      'range': (294.0, 3000.0),
-                                      'tolerance': 1000.0}
 
 pincell_model.export_to_model_xml()
 #--------------------------------------------------------------------------------------------------------------------------#

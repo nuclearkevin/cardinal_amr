@@ -22,6 +22,7 @@ import openmc_common as geom
 from openmc_materials import MATERIALS as mats
 from openmc_assemblies import ASSEMBLY_UNIVERSES as asmb
 from openmc_assemblies import pins_per_axis
+from openmc_settings import COMMON_SETTINGS as settings
 
 ap = ArgumentParser()
 ap.add_argument('-n', dest='n_axial', type=int, default=1,
@@ -75,17 +76,9 @@ all_cells.append(openmc.Cell(name = 'Water Reflector', fill = mats['H2O'], regio
 c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['MOX_43'], mats['MOX_70'], mats['MOX_87'], mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C']]))
 
 ## The simulation settings.
+c5g7_model.settings = settings
 c5g7_model.settings.source = [openmc.IndependentSource(space = openmc.stats.Box(lower_left = (-pins_per_axis * geom.pitch, -pins_per_axis * geom.pitch, 0.0),
                                                                                 upper_right = (pins_per_axis * geom.pitch, pins_per_axis * geom.pitch, geom.core_height)))]
-c5g7_model.settings.batches = 100
-c5g7_model.settings.generations_per_batch = 10
-c5g7_model.settings.inactive = 10
-c5g7_model.settings.particles = 1000
-
-c5g7_model.settings.temperature = {'default': 293.15,
-                                   'method': 'interpolation',
-                                   'range': (294.0, 3000.0),
-                                   'tolerance': 1000.0}
 
 c5g7_model.export_to_model_xml()
 #--------------------------------------------------------------------------------------------------------------------------#
