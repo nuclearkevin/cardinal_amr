@@ -52,7 +52,7 @@ refl_cell = openmc.Cell(name='Axial Reflector Cell', fill = mats['H2O'], region=
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-mult_pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [core_assembly_cell, refl_cell])), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['ZR_C']]))
+mult_pincell_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [core_assembly_cell, refl_cell])))
 
 ## The simulation settings.
 mult_pincell_model.settings = settings

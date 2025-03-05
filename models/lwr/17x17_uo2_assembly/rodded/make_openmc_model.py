@@ -45,7 +45,7 @@ asmb['REF_ROD'].region = asmb['REF'].region & -refl_top & +fuel_top
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [asmb['UO2_ROD'], asmb['REF_ROD']])), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C'], mats['BC4']]))
+c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [asmb['UO2_ROD'], asmb['REF_ROD']])))
 
 ## The simulation settings.
 c5g7_model.settings = settings

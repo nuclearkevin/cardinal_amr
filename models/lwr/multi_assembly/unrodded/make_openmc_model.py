@@ -73,7 +73,7 @@ all_cells.append(openmc.Cell(name = 'Water Reflector', fill = mats['H2O'], regio
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)), materials = openmc.Materials([mats['MOX_43'], mats['MOX_70'], mats['MOX_87'], mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C']]))
+c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = all_cells)))
 
 ## The simulation settings.
 c5g7_model.settings = settings

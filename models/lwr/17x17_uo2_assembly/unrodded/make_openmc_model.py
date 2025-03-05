@@ -45,7 +45,7 @@ asmb['REF'].region = asmb['REF'].region & -refl_top & +fuel_top
 
 #--------------------------------------------------------------------------------------------------------------------------#
 # Setup the model.
-c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [asmb['UO2'], asmb['REF']])), materials = openmc.Materials([mats['UO2'], mats['H2O'], mats['FISS'], mats['ZR_C'], mats['AL_C']]))
+c5g7_model = openmc.Model(geometry = openmc.Geometry(openmc.Universe(cells = [asmb['UO2'], asmb['REF']])))
 
 ## The simulation settings.
 c5g7_model.settings = settings
