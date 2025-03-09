@@ -1,4 +1,4 @@
-!include ../../../amr_strategies/value_jump_rel_error.i
+!include ../../amr_strategies/value_jump_rel_error.i
 
 [Mesh]
   [file]
@@ -33,11 +33,11 @@
 
 [Postprocessors]
   [num_active]
-    type = NumElems
+    type = NumElements
     elem_filter = active
   []
   [num_total]
-    type = NumElems
+    type = NumElements
     elem_filter = total
   []
   [max_rel_err]

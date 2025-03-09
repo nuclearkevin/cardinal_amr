@@ -9,11 +9,11 @@
 [Problem]
   type = OpenMCCellAverageProblem
   particles = 20000
-  inactive_batches = 500
-  batches = 10000
+  inactive_batches = 50
+  batches = 150
 
   verbose = true
-  power = ${fparse 3000e6 / 273 / (17 * 17)}
+  power = ${fparse 3000e6/3000}
   cell_level = 1
   normalize_by_global_tally = false
 
@@ -33,11 +33,11 @@
 
 [Postprocessors]
   [num_active]
-    type = NumElems
+    type = NumElements
     elem_filter = active
   []
   [num_total]
-    type = NumElems
+    type = NumElements
     elem_filter = total
   []
   [max_rel_err]

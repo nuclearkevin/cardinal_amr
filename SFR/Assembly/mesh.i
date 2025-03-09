@@ -1,5 +1,4 @@
-!include ../../common_input.i
-
+!include ../common_input.i
 [Mesh]
     [Pin]
       type = PolygonConcentricCircleMeshGenerator
@@ -8,21 +7,18 @@
       ring_radii = '${r_fuel} ${fparse r_fuel + t_gap} ${fparse r_fuel + t_gap + t_clad}'
       ring_intervals = '${FUEL_RADIAL_DIVISIONS} 1 1'
       polygon_size = ${fparse pitch / 2.0}
-  
       ring_block_ids = '0 1 2 3'
       ring_block_names = 'fuel_center fuel gap cladding'
-      
-  
+
       flat_side_up = false
       quad_center_elements = false
       preserve_volumes = true
-  
       create_outward_interface_boundaries = true
     []
     [Assembly_2D]
         type = PatternedHexMeshGenerator
         inputs = 'Pin'
-        pattern ='        0 0 0 0 0 0 0 0 0;
+        pattern =        '0 0 0 0 0 0 0 0 0;
                          0 0 0 0 0 0 0 0 0 0;
                         0 0 0 0 0 0 0 0 0 0 0;
                        0 0 0 0 0 0 0 0 0 0 0 0;
@@ -40,8 +36,8 @@
                          0 0 0 0 0 0 0 0 0 0;
                           0 0 0 0 0 0 0 0 0;'
 
-        hexagon_size = '${fparse edge_length}'
-        hexagon_size_style = 'radius'
+         hexagon_size = '${fparse edge_length}'
+         hexagon_size_style = 'radius'
     []
     [Assembly_3D]
         type = AdvancedExtruderGenerator
@@ -49,9 +45,7 @@
         heights = '${fparse height}'
         num_layers = '${AXIAL_DIVISIONS}'
         direction = '0.0 0.0 1.0'
-    
-        bottom_boundary = '10001'
-        top_boundary = '10000'
+
       []
       [To_Origin]
         type = TransformGenerator
@@ -64,5 +58,5 @@
         transform = TRANSLATE
         vector_value = '0.0 0.0 ${fparse height / 2.0}'
       []
-      
+
 []
