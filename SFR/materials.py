@@ -1,4 +1,5 @@
 import openmc
+
 material_dict = {
     'outer_fuel': {
         'density': 10.0,
@@ -31,11 +32,11 @@ material_dict = {
     'cladding': {
         'density': 10.0,
         'composition': {
-            "Cu63": 0.9907996814341512,
-            "O16": 0.005507056396711977,
-            "O17": 2.0921524418740345e-6,
-            "O18": 1.1042590355474455e-5,
-            "Al27": 0.00368012742633955,
+            "Cu63": 0.9908,
+            "O16": 0.00551,
+            "O17": 2.09212e-6,
+            "O18": 1.1043e-5,
+            "Al27": 0.0037,
         }
     },
     'sodium': {
@@ -47,11 +48,12 @@ material_dict = {
     'helium': {
         'density': 0.001598,
         'composition': {
-            "He3": 4.8088e-10,
-            "He4": 0.00024043951912,
+            "He3": 4.81e-10,
+            "He4": 0.00024,
         }
     }
 }
+
 
 def make_sfr_material(material_dict, percent_type: str):
     material = openmc.Material()

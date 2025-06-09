@@ -4,17 +4,18 @@ from argparse import ArgumentParser
 import openmc.material
 
 from SFR.materials import make_sfr_material, material_dict
-from SFR import common_input as geom
+from SFR import common_input as geometric_params
 
 
 def simulation_settings(shannon_entropy: bool, height: float):
-    pitch = geom.pitch
-    lower_left = (-pitch / 2, -pitch / 2, 0.0)
-    upper_right = (pitch / 2, pitch / 2, height)
-    uniform_dist = openmc.stats.Box(lower_left, upper_right)
+    fuel_radius = geometric_params.r_fuel
+    lower_left = (-fuel_radius, -fuel_radius, 0.0)
+    upper_right = (fuel_radius, fuel_radius, height)
 
     setting = openmc.Settings()
-    setting.source = openmc.IndependentSource(space=uniform_dist)
+    setting.source = openmc.IndependentSource(
+        space=openmc.stats.Point((0, 0, geometric_params.height / 2)),
+        angle=openmc.stats.Isotropic())
     setting.batches = 200
     setting.inactive = 40
     setting.particles = 20000
@@ -27,10 +28,9 @@ def simulation_settings(shannon_entropy: bool, height: float):
         setting.entropy_mesh = entropy_mesh
 
     setting.temperature = {
-        "default": 280.0 + 273.15,
+        "default": 553.15,
         "method": "interpolation",
-        "range": (294.0, 3000.0),
-        "tolerance": 1000.0,
+        "range": (290.0, 3000.0)
     }
     return setting
 
@@ -50,9 +50,9 @@ def argument_parser():
         action="store_true",
         help="Add Shannon entropy mesh"
     )
-    ap.add_argument("-p", dest="pincell_type", type=str, default="inner_pincell",
-                    help=("Material composition of the pincell fuel material"
-                          "based on the location of pincell in the reactor geometry"))
+    ap.add_argument("-p", dest="pincell_type", type=str, choices=["inner", "outer"],
+                    default="inner",
+                    help="Material composition of the pincell fuel material")
 
     return ap.parse_args()
 
@@ -67,38 +67,40 @@ def model_generate(arguments):
 
     the universe class is mostly for reuse if we want to create an assembly
     """
-
-    if arguments.pincell_type == "inner_pincell":
-        fuel_material = make_sfr_material(material_dict['inner_fuel'], percent_type='wo')
-    else:
-        fuel_material = make_sfr_material(material_dict['outer_fuel'], percent_type='wo')
+    fuel_mat_name = f'{arguments.pincell_type}_fuel'
+    fuel_material = make_sfr_material(material_dict[fuel_mat_name], percent_type='wo')
     cladding_material = make_sfr_material(material_dict['cladding'], percent_type='ao')
     sodium = make_sfr_material(material_dict['sodium'], percent_type='ao')
     helium = make_sfr_material(material_dict['helium'], percent_type='ao')
 
-    fuel_or = openmc.ZCylinder(r=geom.r_fuel)
-    clad_ir = openmc.ZCylinder(r=geom.r_clad_inner)
-    clad_or = openmc.ZCylinder(r=geom.r_clad_inner + geom.t_clad)
+    fuel_or = openmc.ZCylinder(r=geometric_params.r_fuel)
+    clad_ir = openmc.ZCylinder(r=geometric_params.r_clad_inner)
+    clad_or = openmc.ZCylinder(r=(geometric_params.r_clad_inner + geometric_params.t_clad))
+    fuel_bb = openmc.model.RectangularPrism(width=geometric_params.pitch,
+                                            height=geometric_params.height / arguments.n_axial,
+                                            boundary_type="reflective")
+    top = openmc.ZPlane(z0=geometric_params.height, boundary_type="reflective")
+    bottom = openmc.ZPlane(z0=0, boundary_type="vacuum")
 
-    z_plane = [openmc.ZPlane(z0=i) for i in np.linspace(-geom.height / 2, geom.height / 2, arguments.n_axial + 1)]
+    cladding_cell = openmc.Cell(fill=cladding_material, region=+clad_ir & -clad_or)
+    gas_gap_cell = openmc.Cell(fill=helium, region=+fuel_or & -clad_ir)
+    fuel_cell = openmc.Cell(fill=fuel_material, region=-fuel_or)
+    sodium_cell = openmc.Cell(region=+clad_or & -fuel_bb & +bottom & - top, fill=sodium)
+    pincell_universe = openmc.Universe(cells=[cladding_cell, gas_gap_cell, fuel_cell])
 
-    top = z_plane[-1]
-    bottom = z_plane[0]
-    top.boundary_type = "vacuum"
-    bottom.boundary_type = "vacuum"
+    pincell_lattice = openmc.RectLattice()
+    pincell_lattice.pitch = (
+        geometric_params.pitch, geometric_params.pitch,
+        geometric_params.height / arguments.n_axial)
+    pincell_lattice.lower_left = (
+        -geometric_params.pitch / 2.0, -geometric_params.pitch / 2.0, 0.0)
+    pincell_lattice.universes = [[[pincell_universe]] for i in range(arguments.n_axial)]
 
-    all_inner_cells = []
-
-    for i in range(arguments.n_axial):
-        layer = +z_plane[i] & -z_plane[i + 1]
-        all_inner_cells.append(openmc.Cell(fill=fuel_material, region=layer & -fuel_or))
-        all_inner_cells.append(openmc.Cell(fill=helium, region=layer & +fuel_or & -clad_ir))
-        all_inner_cells.append(openmc.Cell(fill=cladding_material, region=layer & +clad_ir & -clad_or))
-        all_inner_cells.append(openmc.Cell(fill=sodium, region=+clad_or & layer))
-
-    return openmc.Universe(cells=all_inner_cells), openmc.Materials(
-        [fuel_material, sodium, helium, cladding_material]), openmc.Geometry(all_inner_cells), simulation_settings(
-        arguments.shannon_entropy, height=geom.height)
+    return openmc.Universe(
+        cells=[openmc.Cell(fill=pincell_lattice, region=-fuel_bb & +bottom & - top), sodium_cell]), openmc.Materials(
+        [fuel_material, sodium, helium, cladding_material]), openmc.Geometry(
+        [openmc.Cell(fill=pincell_lattice, region=-fuel_bb & +bottom & - top), sodium_cell]), simulation_settings(
+        arguments.shannon_entropy, height=geometric_params.height)
 
 
 if __name__ == "__main__":
