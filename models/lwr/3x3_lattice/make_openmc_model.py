@@ -39,9 +39,9 @@ core_assembly = openmc.RectLattice(name='Fuel Assembly')
 core_assembly.pitch = (geom.pitch, geom.pitch, geom.core_height / args.n_axial)
 core_assembly.lower_left = (-pins_per_axis * geom.pitch / 2.0, -pins_per_axis * geom.pitch / 2.0, 0.0)
 core_assembly.universes = [ [
-    [pins['UO2'], pins['UO2'], pins['UO2']],
-    [pins['UO2'], pins['UO2'], pins['UO2']],
-    [pins['UO2'], pins['UO2'], pins['UO2']]
+  [pins['UO2'], pins['UO2'], pins['UO2']],
+  [pins['UO2'], pins['UO2'], pins['UO2']],
+  [pins['UO2'], pins['UO2'], pins['UO2']]
 ] for i in range(args.n_axial) ]
 core_assembly_cell = openmc.Cell(name = 'UO2 Pincell Lattice Cell', region = -assembly_bb & +fuel_center & -fuel_top, fill = core_assembly)
 

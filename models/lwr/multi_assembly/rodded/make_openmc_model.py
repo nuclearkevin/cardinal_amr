@@ -42,8 +42,8 @@ core_back = openmc.YPlane(y0 = -pins_per_axis * geom.pitch)
 core_bb_xy = -core_front & +core_back & +core_left & -core_right
 
 core_cells = [
-    [asmb['UO2_ROD'], asmb['MOX']],
-    [asmb['MOX'],     asmb['UO2']]
+  [asmb['UO2_ROD'], asmb['MOX']],
+  [asmb['MOX'],     asmb['UO2']]
 ]
 core_assembly = openmc.RectLattice(name = 'Core Assembly')
 core_assembly.pitch = (pins_per_axis * geom.pitch, pins_per_axis * geom.pitch, geom.core_height / args.n_axial)
@@ -61,8 +61,8 @@ upper_refl_assembly = openmc.RectLattice(name = 'Upper Reflector Assembly')
 upper_refl_assembly.pitch = (pins_per_axis * geom.pitch, pins_per_axis * geom.pitch)
 upper_refl_assembly.lower_left = (-pins_per_axis * geom.pitch, -pins_per_axis * geom.pitch)
 upper_refl_assembly.universes = [
-    [asmb['REF'], asmb['REF']],
-    [asmb['REF'], asmb['REF']]
+  [asmb['REF'], asmb['REF']],
+  [asmb['REF'], asmb['REF']]
 ]
 all_cells.append(openmc.Cell(name = 'Upper Reflector Cell', region = +core_top & -refl_top & core_bb_xy, fill = upper_refl_assembly))
 
