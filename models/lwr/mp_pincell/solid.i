@@ -110,12 +110,6 @@ T_fluid = ${fparse 280.0 + 273.15}
   petsc_options_value = 'hypre boomeramg'
 []
 
-[Outputs]
-  exodus = true
-  execute_on = 'TIMESTEP_END'
-  csv = true
-[]
-
 [Postprocessors]
   [source_integral]
     type = ElementIntegralVariablePostprocessor
@@ -123,8 +117,20 @@ T_fluid = ${fparse 280.0 + 273.15}
     execute_on = transfer
     block = '0 1'
   []
-  [max_T]
+  [max_fuel_T]
     type = NodalExtremeValue
     variable = temp
+    block = '0 1'
   []
+  [max_clad_T]
+    type = NodalExtremeValue
+    variable = temp
+    block = '3'
+  []
+[]
+
+[Outputs]
+  exodus = true
+  execute_on = 'TIMESTEP_END'
+  csv = true
 []
