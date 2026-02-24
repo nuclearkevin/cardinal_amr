@@ -45,5 +45,5 @@ t_al_clad   = 0.2
 NUM_SECTORS              = 2
 FUEL_RADIAL_DIVISIONS    = 2
 BACKGROUND_DIVISIONS     = 1
-AXIAL_DIVISIONS          = 5
+AXIAL_DIVISIONS          = 50
 #--------------------------------------------------------------------------------------------------------------------------#
